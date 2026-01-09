@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système de Recherche de Revues Scientifiques - Sciences Naturelles</title>
+    <meta name="description" content="Outil de recherche et évaluation de revues scientifiques en sciences naturelles. Intègre les indicateurs JCR (JIF) et SCImago SJR pour l'évaluation des publications académiques.">
+    <meta name="keywords" content="revues scientifiques, sciences naturelles, facteur d'impact, JIF, SJR, SCI, recherche académique, évaluation publications">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+        }
+
+        .search-section {
+            background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input .form-control {
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .search-input .btn {
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            margin-left: 1rem;
+            font-weight: 600;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .filter-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .domain-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .domain-card {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .domain-card:hover {
+            border-color: var(--primary-color);
+            background-color: #f0f9ff;
+        }
+
+        .domain-card.selected {
+            border-color: var(--primary-color);
+            background-color: #eff6ff;
+        }
+
+        .domain-card .icon {
+            font-size: 1.5rem;
+            width: 40px;
+            text-align: center;
+        }
+
+        .domain-card .label {
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .level-card {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .level-card:hover {
+            border-color: var(--primary-color);
+            background-color: #f0f9ff;
+        }
+
+        .level-card.selected {
+            border-color: var(--primary-color);
+            background-color: #eff6ff;
+        }
+
+        .level-card .label {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .results-section {
+            margin-top: 2rem;
+        }
+
+        .results-count {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .journal-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .journal-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+        }
+
+        .journal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .journal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .journal-meta {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--light-bg);
+            border-radius: 6px;
+        }
+
+        .metric-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .metric-value.high {
+            color: var(--success-color);
+        }
+
+        .metric-value.medium {
+            color: var(--warning-color);
+        }
+
+        .metric-value.low {
+            color: var(--danger-color);
+        }
+
+        .oa-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .oa-badge.full {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .oa-badge.hybrid {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .oa-badge.traditional {
+            background: #f1f5f9;
+            color: var(--text-secondary);
+        }
+
+        .compare-section {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgb(0 0 0 / 0.12);
+            min-width: 300px;
+            z-index: 1000;
+        }
+
+        .compare-btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .selected-count {
+            text-align: center;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .modal-xl {
+            max-width: 1200px;
+        }
+
+        .comparison-table {
+            font-size: 0.85rem;
+        }
+
+        .comparison-table th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .comparison-table td {
+            padding: 0.5rem 0.75rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table .journal-name {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .clear-filters {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clear-filters:hover {
+            background: #dc2626;
+        }
+
+        .footer {
+            background: var(--text-primary);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer a {
+            color: #cbd5e1;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .search-input {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-input .btn {
+                margin-left: 0;
+            }
+
+            .domain-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .level-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .compare-section {
+                position: static;
+                margin-top: 2rem;
+            }
+
+            .comparison-table {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-search me-2"></i>
+                Système de Recherche de Revues Scientifiques
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="sciences-naturelles.html">Sciences Naturelles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="sciences-humaines-sociales.html">Sciences Humaines et Sociales</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Section de recherche -->
+    <section class="search-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-4">
+                    <h1>Recherche de Revues en Sciences Naturelles</h1>
+                    <p class="lead">Découvrez et évaluez plus de 8 000 revues scientifiques avec les indicateurs JCR et SJR</p>
+                </div>
+                <div class="col-12">
+                    <div class="search-input d-flex">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Entrez le nom de la revue...">
+                        <button id="searchBtn" class="btn btn-light">
+                            <i class="fas fa-search me-2"></i>Rechercher
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Section de filtrage par domaine de recherche -->
+        <div class="filter-section">
+            <h3 class="filter-title">
+                <i class="fas fa-filter"></i>
+                Filtrage par Domaine de Recherche
+            </h3>
+            <div class="domain-grid" id="domainFilters">
+                <div class="domain-card" data-domain="medicine">
+                    <div class="icon">🏥</div>
+                    <div class="label">Médecine et Santé</div>
+                </div>
+                <div class="domain-card" data-domain="biology">
+                    <div class="icon">🧬</div>
+                    <div class="label">Biologie et Sciences de la Vie</div>
+                </div>
+                <div class="domain-card" data-domain="chemistry">
+                    <div class="icon">⚗️</div>
+                    <div class="label">Chimie</div>
+                </div>
+                <div class="domain-card" data-domain="physics">
+                    <div class="icon">⚛️</div>
+                    <div class="label">Physique et Astronomie</div>
+                </div>
+                <div class="domain-card" data-domain="mathematics">
+                    <div class="icon">📐</div>
+                    <div class="label">Mathématiques et Informatique</div>
+                </div>
+                <div class="domain-card" data-domain="earth">
+                    <div class="icon">🌍</div>
+                    <div class="label">Sciences de la Terre et Environnement</div>
+                </div>
+                <div class="domain-card" data-domain="engineering">
+                    <div class="icon">⚙️</div>
+                    <div class="label">Ingénierie et Technologie</div>
+                </div>
+                <div class="domain-card" data-domain="agriculture">
+                    <div class="icon">🌾</div>
+                    <div class="label">Agriculture et Sciences Alimentaires</div>
+                </div>
+                <div class="domain-card" data-domain="other">
+                    <div class="icon">📚</div>
+                    <div class="label">Autres</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section de filtrage par niveau -->
+        <div class="filter-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="filter-title mb-0">
+                    <i class="fas fa-layer-group"></i>
+                    Filtrage par Niveau de Classification
+                </h3>
+                <button class="clear-filters" id="clearFilters">
+                    <i class="fas fa-times me-2"></i>Effacer le filtre
+                </button>
+            </div>
+            <div class="level-grid" id="levelFilters">
+                <div class="level-card" data-level="top">
+                    <div class="label">Revues Internationales de Premier Plan</div>
+                </div>
+                <div class="level-card" data-level="q1a">
+                    <div class="label">SCI Zone Q1 Classe A</div>
+                </div>
+                <div class="level-card" data-level="q1b">
+                    <div class="label">SCI Zone Q1 Classe B</div>
+                </div>
+                <div class="level-card" data-level="q1c">
+                    <div class="label">SCI Zone Q1 Classe C</div>
+                </div>
+                <div class="level-card" data-level="q1d">
+                    <div class="label">SCI Zone Q1 Classe D</div>
+                </div>
+                <div class="level-card" data-level="q2">
+                    <div class="label">SCI Zone Q2</div>
+                </div>
+                <div class="level-card" data-level="q3">
+                    <div class="label">SCI Zone Q3</div>
+                </div>
+                <div class="level-card" data-level="excellence">
+                    <div class="label">Plan d'Action d'Excellence</div>
+                </div>
+                <div class="level-card" data-level="high_potential">
+                    <div class="label">Nouvelles Revues à Haut Potentiel</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section des résultats -->
+        <div class="results-section">
+            <div class="results-count" id="resultsCount">
+                <span id="resultsText">Prêt pour la recherche...</span>
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Recherche en cours...</p>
+                </div>
+            </div>
+
+            <div id="resultsContainer">
+                <!-- Les résultats seront insérés ici par JavaScript -->
+            </div>
+
+            <div class="no-results" id="noResults" style="display: none;">
+                <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+                <h4>Aucune revue trouvée</h4>
+                <p>Essayez de modifier vos critères de recherche ou vos filtres.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section de comparaison -->
+    <div class="compare-section" id="compareSection" style="display: none;">
+        <div class="selected-count" id="selectedCount">0 revue(s) sélectionnée(s)</div>
+        <button class="btn btn-primary compare-btn" id="compareBtn" disabled>
+            <i class="fas fa-balance-scale me-2"></i>Comparer
+        </button>
+        <button class="btn btn-outline-secondary compare-btn" id="clearSelection">
+            <i class="fas fa-trash me-2"></i>Vider
+        </button>
+    </div>
+
+    <!-- Modal de comparaison -->
+    <div class="modal fade" id="comparisonModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Rapport de Comparaison des Revues</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered comparison-table" id="comparisonTable">
+                            <thead>
+                                <tr>
+                                    <th>Nom de la Revue</th>
+                                    <th>Domaine de Recherche</th>
+                                    <th>Type d'Accès Libre</th>
+                                    <th>Niveau de Classification</th>
+                                    <th>Facteur d'Impact</th>
+                                    <th>Facteur d'Impact sur 5 ans</th>
+                                    <th>Classification</th>
+                                    <th>Classement</th>
+                                    <th>Valeur SJR</th>
+                                    <th>Classification SJR</th>
+                                    <th>Éditeur</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comparisonBody">
+                                <!-- Le contenu sera généré par JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Fermer
+                    </button>
+                    <button type="button" class="btn btn-primary" id="savePDF">
+                        <i class="fas fa-download me-2"></i>Sauvegarder PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Système de Recherche de Revues Scientifiques</h5>
+                    <p>Outil d'évaluation et de recherche de revues académiques basé sur les indicateurs JCR et SJR.</p>
+                </div>
+                <div class="col-md-3">
+                    <h6>Navigation</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="sciences-naturelles.html">Sciences Naturelles</a></li>
+                        <li><a href="sciences-humaines-sociales.html">Sciences Humaines</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6>À propos</h6>
+                    <p>Données mises à jour régulièrement avec les dernières publications JCR et SJR.</p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2024 Système de Recherche de Revues Scientifiques. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jsPDF pour l'export PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Scripts du projet -->
+    <script src="journals.js"></script>
+    <script src="jif_metrics.js"></script>
+    <script src="sjr_metrics.js"></script>
+    <script src="oa_journals.js"></script>
+    <script src="research_fields.js"></script>
+    <script src="wos_categories.js"></script>
+    <script src="i18n-fr.js"></script>
+
+    <script>
+        // État de l'application
+        let currentJournals = [];
+        let selectedJournals = [];
+        let activeFilters = {
+            domain: null,
+            level: null
+        };
+
+        // Éléments DOM
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const resultsCount = document.getElementById('resultsCount');
+        const resultsText = document.getElementById('resultsText');
+        const loading = document.getElementById('loading');
+        const noResults = document.getElementById('noResults');
+        const compareSection = document.getElementById('compareSection');
+        const selectedCount = document.getElementById('selectedCount');
+        const compareBtn = document.getElementById('compareBtn');
+        const clearSelection = document.getElementById('clearSelection');
+        const comparisonModal = new bootstrap.Modal(document.getElementById('comparisonModal'));
+        const comparisonTable = document.getElementById('comparisonTable');
+        const comparisonBody = document.getElementById('comparisonBody');
+        const savePDF = document.getElementById('savePDF');
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFilters();
+            loadInitialData();
+        });
+
+        // Initialiser les filtres
+        function initializeFilters() {
+            // Filtres par domaine
+            document.querySelectorAll('#domainFilters .domain-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const domain = this.dataset.domain;
+                    document.querySelectorAll('#domainFilters .domain-card').forEach(c => c.classList.remove('selected'));
+                    if (activeFilters.domain === domain) {
+                        activeFilters.domain = null;
+                    } else {
+                        this.classList.add('selected');
+                        activeFilters.domain = domain;
+                    }
+                    filterJournals();
+                });
+            });
+
+            // Filtres par niveau
+            document.querySelectorAll('#levelFilters .level-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const level = this.dataset.level;
+                    document.querySelectorAll('#levelFilters .level-card').forEach(c => c.classList.remove('selected'));
+                    if (activeFilters.level === level) {
+                        activeFilters.level = null;
+                    } else {
+                        this.classList.add('selected');
+                        activeFilters.level = level;
+                    }
+                    filterJournals();
+                });
+            });
+
+            // Bouton effacer les filtres
+            document.getElementById('clearFilters').addEventListener('click', clearAllFilters);
+        }
+
+        // Charger les données initiales
+        function loadInitialData() {
+            // Simuler le chargement des données
+            showLoading();
+            setTimeout(() => {
+                hideLoading();
+                displayResults(journalsData || []);
+            }, 1000);
+        }
+
+        // Recherche
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        function performSearch() {
+            const query = searchInput.value.trim();
+            if (!query) {
+                displayResults(currentJournals);
+                return;
+            }
+
+            showLoading();
+            setTimeout(() => {
+                const filtered = currentJournals.filter(journal =>
+                    journal.title.toLowerCase().includes(query.toLowerCase()) ||
+                    journal.abbr?.toLowerCase().includes(query.toLowerCase()) ||
+                    journal.issn?.includes(query)
+                );
+                hideLoading();
+                displayResults(filtered);
+            }, 300);
+        }
+
+        // Filtrage des revues
+        function filterJournals() {
+            let filtered = journalsData || [];
+
+            if (activeFilters.domain) {
+                filtered = filtered.filter(journal => {
+                    const field = researchFields[journal.field];
+                    return field && field.keywords.some(keyword =>
+                        journal.title.toLowerCase().includes(keyword.toLowerCase())
+                    );
+                });
+            }
+
+            if (activeFilters.level) {
+                filtered = filtered.filter(journal => journal.level === activeFilters.level);
+            }
+
+            currentJournals = filtered;
+            displayResults(filtered);
+        }
+
+        // Effacer tous les filtres
+        function clearAllFilters() {
+            activeFilters.domain = null;
+            activeFilters.level = null;
+            document.querySelectorAll('.domain-card, .level-card').forEach(card =>
+                card.classList.remove('selected')
+            );
+            currentJournals = journalsData || [];
+            displayResults(currentJournals);
+        }
+
+        // Afficher les résultats
+        function displayResults(journals) {
+            resultsContainer.innerHTML = '';
+
+            if (journals.length === 0) {
+                noResults.style.display = 'block';
+                resultsText.textContent = 'Aucune revue trouvée';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            resultsText.textContent = `${journals.length.toLocaleString('fr-FR')} revue(s) trouvée(s)`;
+
+            journals.forEach(journal => {
+                const journalCard = createJournalCard(journal);
+                resultsContainer.appendChild(journalCard);
+            });
+        }
+
+        // Créer une carte de revue
+        function createJournalCard(journal) {
+            const card = document.createElement('div');
+            card.className = 'journal-card';
+
+            const jifData = jifMetrics[journal.issn] || {};
+            const sjrData = sjrMetrics[journal.issn] || {};
+            const oaData = oaJournals[journal.issn] || {};
+
+            const oaType = oaData.type || 'traditional';
+            const oaLabel = MESSAGES_FR.oa[oaType] || MESSAGES_FR.oa.traditional;
+            const oaClass = oaType === 'full' ? 'full' : oaType === 'hybrid' ? 'hybrid' : 'traditional';
+
+            card.innerHTML = `
+                <div class="journal-header">
+                    <div>
+                        <h4 class="journal-title">${journal.title}</h4>
+                        <div class="journal-meta">
+                            ISSN: ${journal.issn} ${journal.eissn ? `| eISSN: ${journal.eissn}` : ''}
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <span class="oa-badge oa-badge-${oaClass}">${oaLabel}</span>
+                        <input type="checkbox" class="form-check-input compare-checkbox" data-issn="${journal.issn}">
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-label">Facteur d'Impact</span>
+                        <span class="metric-value ${getMetricClass(jifData.jif)}">${jifData.jif || 'N/A'}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Facteur d'Impact sur 5 ans</span>
+                        <span class="metric-value ${getMetricClass(jifData.jif5year)}">${jifData.jif5year || 'N/A'}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Classification</span>
+                        <span class="metric-value">${jifData.quartile || 'N/A'}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Classement</span>
+                        <span class="metric-value">${jifData.rank || 'N/A'}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Valeur SJR</span>
+                        <span class="metric-value ${getMetricClass(sjrData.sjr)}">${sjrData.sjr || 'N/A'}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Classification SJR</span>
+                        <span class="metric-value">${sjrData.quartile || 'N/A'}</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <small class="text-muted">
+                        Éditeur: ${journal.publisher || 'N/A'} |
+                        Abréviation: ${journal.abbr || 'N/A'}
+                    </small>
+                </div>
+            `;
+
+            // Gestionnaire pour la case à cocher de comparaison
+            const checkbox = card.querySelector('.compare-checkbox');
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    selectedJournals.push(journal);
+                } else {
+                    selectedJournals = selectedJournals.filter(j => j.issn !== journal.issn);
+                }
+                updateCompareSection();
+            });
+
+            return card;
+        }
+
+        // Obtenir la classe CSS pour les métriques
+        function getMetricClass(value) {
+            if (!value || value === 'N/A') return '';
+            const numValue = parseFloat(value);
+            if (numValue >= 5) return 'high';
+            if (numValue >= 2) return 'medium';
+            return 'low';
+        }
+
+        // Mettre à jour la section de comparaison
+        function updateCompareSection() {
+            if (selectedJournals.length > 0) {
+                compareSection.style.display = 'block';
+                selectedCount.textContent = `${selectedJournals.length} revue(s) sélectionnée(s)`;
+                compareBtn.disabled = selectedJournals.length < 2;
+            } else {
+                compareSection.style.display = 'none';
+            }
+        }
+
+        // Gestionnaire pour le bouton de comparaison
+        compareBtn.addEventListener('click', showComparison);
+
+        function showComparison() {
+            if (selectedJournals.length < 2) return;
+
+            comparisonBody.innerHTML = '';
+
+            selectedJournals.forEach(journal => {
+                const jifData = jifMetrics[journal.issn] || {};
+                const sjrData = sjrMetrics[journal.issn] || {};
+                const oaData = oaJournals[journal.issn] || {};
+
+                const oaType = oaData.type || 'traditional';
+                const oaLabel = MESSAGES_FR.oa[oaType] || MESSAGES_FR.oa.traditional;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="journal-name">${journal.title}</td>
+                    <td>${researchFields[journal.field]?.label || journal.field}</td>
+                    <td>${oaLabel}</td>
+                    <td>${getLevelLabel(journal.level)}</td>
+                    <td>${jifData.jif || 'N/A'}</td>
+                    <td>${jifData.jif5year || 'N/A'}</td>
+                    <td>${jifData.quartile || 'N/A'}</td>
+                    <td>${jifData.rank || 'N/A'}</td>
+                    <td>${sjrData.sjr || 'N/A'}</td>
+                    <td>${sjrData.quartile || 'N/A'}</td>
+                    <td>${journal.publisher || 'N/A'}</td>
+                `;
+                comparisonBody.appendChild(row);
+            });
+
+            comparisonModal.show();
+        }
+
+        // Obtenir le label du niveau
+        function getLevelLabel(level) {
+            const labels = {
+                'top': 'Revues Internationales de Premier Plan',
+                'q1a': 'SCI Zone Q1 Classe A',
+                'q1b': 'SCI Zone Q1 Classe B',
+                'q1c': 'SCI Zone Q1 Classe C',
+                'q1d': 'SCI Zone Q1 Classe D',
+                'q2': 'SCI Zone Q2',
+                'q3': 'SCI Zone Q3',
+                'excellence': 'Plan d'Action d'Excellence',
+                'high_potential': 'Nouvelles Revues à Haut Potentiel'
+            };
+            return labels[level] || level;
+        }
+
+        // Gestionnaire pour vider la sélection
+        clearSelection.addEventListener('click', function() {
+            selectedJournals = [];
+            document.querySelectorAll('.compare-checkbox').forEach(cb => cb.checked = false);
+            updateCompareSection();
+        });
+
+        // Gestionnaire pour sauvegarder en PDF
+        savePDF.addEventListener('click', function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(16);
+            doc.text('Rapport de Comparaison des Revues', 20, 20);
+
+            const tableData = selectedJournals.map(journal => {
+                const jifData = jifMetrics[journal.issn] || {};
+                const sjrData = sjrMetrics[journal.issn] || {};
+                const oaData = oaJournals[journal.issn] || {};
+                const oaType = oaData.type || 'traditional';
+                const oaLabel = MESSAGES_FR.oa[oaType] || MESSAGES_FR.oa.traditional;
+
+                return [
+                    journal.title,
+                    researchFields[journal.field]?.label || journal.field,
+                    oaLabel,
+                    getLevelLabel(journal.level),
+                    jifData.jif || 'N/A',
+                    jifData.jif5year || 'N/A',
+                    jifData.quartile || 'N/A',
+                    jifData.rank || 'N/A',
+                    sjrData.sjr || 'N/A',
+                    sjrData.quartile || 'N/A',
+                    journal.publisher || 'N/A'
+                ];
+            });
+
+            doc.autoTable({
+                head: [['Nom de la Revue', 'Domaine', 'Accès Libre', 'Niveau', 'JIF', 'JIF 5 ans', 'Quartile', 'Rang', 'SJR', 'Quartile SJR', 'Éditeur']],
+                body: tableData,
+                startY: 30,
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [37, 99, 235] }
+            });
+
+            doc.save('comparaison-revues.pdf');
+        });
+
+        // Fonctions utilitaires
+        function showLoading() {
+            loading.style.display = 'block';
+            resultsText.style.display = 'none';
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+            resultsText.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

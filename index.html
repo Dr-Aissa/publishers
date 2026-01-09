@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système de Recherche de Revues Scientifiques - Accueil</title>
+    <meta name="description" content="Outil complet de recherche et évaluation de revues scientifiques. Accédez aux données JCR (JIF) et SCImago SJR pour plus de 11 000 revues académiques.">
+    <meta name="keywords" content="revues scientifiques, facteur d'impact, JIF, SJR, SCI, SSCI, recherche académique, évaluation publications, classement revues">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --gradient: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .hero-section {
+            background: var(--gradient);
+            color: white;
+            padding: 5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="0,0 1000,0 1000,60 0,100"/></svg>') no-repeat center bottom;
+            background-size: cover;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .btn-hero {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+        }
+
+        .btn-hero:hover {
+            background: white;
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stats-section {
+            background: white;
+            padding: 4rem 0;
+            margin: -2rem 0 4rem 0;
+            position: relative;
+            z-index: 2;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 12px;
+            background: var(--light-bg);
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .features-section {
+            padding: 4rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .categories-section {
+            background: var(--light-bg);
+            padding: 4rem 0;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-primary);
+            display: block;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .category-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .cta-section {
+            background: var(--gradient);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .footer {
+            background: var(--text-primary);
+            color: white;
+            padding: 3rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer a {
+            color: #cbd5e1;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .cta-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-search me-2"></i>
+                Système de Recherche de Revues Scientifiques
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="sciences-naturelles.html">Sciences Naturelles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="sciences-humaines-sociales.html">Sciences Humaines et Sociales</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Section Hero -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 hero-content">
+                    <h1 class="hero-title">Système de Recherche de Revues Scientifiques</h1>
+                    <p class="hero-subtitle">
+                        Découvrez, évaluez et comparez plus de 11 000 revues scientifiques avec les indicateurs JCR et SJR.
+                        Un outil complet pour les chercheurs, les étudiants et les institutions académiques.
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="sciences-naturelles.html" class="btn-hero">
+                            <i class="fas fa-flask me-2"></i>Sciences Naturelles
+                        </a>
+                        <a href="sciences-humaines-sociales.html" class="btn-hero">
+                            <i class="fas fa-users me-2"></i>Sciences Humaines et Sociales
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 d-none d-lg-block">
+                    <div class="text-center">
+                        <i class="fas fa-search fa-10x opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Statistiques -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row text-center mb-4">
+                <div class="col-12">
+                    <h2 class="h3 mb-4">Base de données complète et à jour</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-number">11 987</div>
+                        <div class="stat-label">Revues référencées</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-number">8 464</div>
+                        <div class="stat-label">Sciences Naturelles</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-number">3 523</div>
+                        <div class="stat-label">Sciences Humaines</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-number">2024</div>
+                        <div class="stat-label">Données à jour</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Fonctionnalités -->
+    <section class="features-section">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-12">
+                    <h2>Fonctionnalités puissantes</h2>
+                    <p class="lead text-muted">Des outils avancés pour une recherche et une analyse efficaces</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3 class="feature-title">Recherche intelligente</h3>
+                        <p class="feature-description">
+                            Recherchez par nom de revue, ISSN, abréviation ou domaine de recherche.
+                            Résultats instantanés avec mise en évidence des termes recherchés.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-filter"></i>
+                        </div>
+                        <h3 class="feature-title">Filtres avancés</h3>
+                        <p class="feature-description">
+                            Filtrez par domaine de recherche (médecine, biologie, chimie, etc.) et par niveau
+                            de classification (Q1, Q2, etc.) pour affiner vos résultats.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <h3 class="feature-title">Comparaison détaillée</h3>
+                        <p class="feature-description">
+                            Comparez jusqu'à 5 revues simultanément avec tous leurs indicateurs.
+                            Exportez les rapports de comparaison en PDF.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="feature-title">Indicateurs complets</h3>
+                        <p class="feature-description">
+                            Accédez aux facteurs d'impact JCR (JIF), valeurs SJR, quartiles,
+                            classements et informations sur l'accès ouvert.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Responsive design</h3>
+                        <p class="feature-description">
+                            Interface adaptative pour tous les appareils : ordinateurs, tablettes et smartphones.
+                            Navigation fluide sur tous les supports.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h3 class="feature-title">Données à jour</h3>
+                        <p class="feature-description">
+                            Base de données régulièrement mise à jour avec les dernières publications
+                            JCR et SCImago. Fiabilité et précision garanties.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Catégories -->
+    <section class="categories-section">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-12">
+                    <h2>Explorez par domaine</h2>
+                    <p class="lead text-muted">Accédez directement aux revues de votre domaine de recherche</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <a href="sciences-naturelles.html" class="category-card">
+                        <div class="category-icon text-primary">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <h3 class="category-title">Sciences Naturelles</h3>
+                        <p class="category-description">
+                            Médecine, biologie, chimie, physique, mathématiques, sciences de la Terre,
+                            ingénierie et agriculture. Plus de 8 000 revues référencées.
+                        </p>
+                    </a>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <a href="sciences-humaines-sociales.html" class="category-card">
+                        <div class="category-icon text-success">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="category-title">Sciences Humaines et Sociales</h3>
+                        <p class="category-description">
+                            Sciences sociales, arts, littérature, économie, psychologie et autres disciplines
+                            humaines. Plus de 3 500 revues spécialisées.
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="cta-title">Prêt à explorer les revues scientifiques ?</h2>
+            <p class="cta-subtitle">
+                Commencez votre recherche dès maintenant et découvrez les meilleures revues de votre domaine.
+            </p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="sciences-naturelles.html" class="btn btn-light btn-lg px-4 py-3">
+                    <i class="fas fa-arrow-right me-2"></i>Explorer les Sciences Naturelles
+                </a>
+                <a href="sciences-humaines-sociales.html" class="btn btn-outline-light btn-lg px-4 py-3">
+                    <i class="fas fa-arrow-right me-2"></i>Découvrir les Sciences Humaines
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Système de Recherche de Revues Scientifiques</h5>
+                    <p>Outil d'évaluation et de recherche de revues académiques basé sur les indicateurs JCR et SJR.</p>
+                    <p class="mb-0">
+                        <small>Données issues de : Journal Citation Reports (Clarivate) et SCImago Journal & Country Rank</small>
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <h6>Navigation</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="sciences-naturelles.html">Sciences Naturelles</a></li>
+                        <li><a href="sciences-humaines-sociales.html">Sciences Humaines et Sociales</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6>À propos</h6>
+                    <ul class="list-unstyled">
+                        <li><small>Version française</small></li>
+                        <li><small>Dernière mise à jour : Janvier 2024</small></li>
+                        <li><small>Données : JCR 2024 & SJR 2024</small></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2024 Système de Recherche de Revues Scientifiques. Tous droits réservés.</p>
+                <p class="mb-0">
+                    <small>Ce site est fourni à titre informatif. Les données peuvent être utilisées pour la recherche académique.</small>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Animation des statistiques au scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const statNumbers = document.querySelectorAll('.stat-number');
+
+            const observerOptions = {
+                threshold: 0.5,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = entry.target;
+                        const finalValue = parseInt(target.textContent.replace(/\s/g, ''));
+                        animateNumber(target, 0, finalValue, 2000);
+                        observer.unobserve(target);
+                    }
+                });
+            }, observerOptions);
+
+            statNumbers.forEach(stat => {
+                observer.observe(stat);
+            });
+        });
+
+        function animateNumber(element, start, end, duration) {
+            const startTime = performance.now();
+            const endTime = startTime + duration;
+
+            function update(currentTime) {
+                if (currentTime < endTime) {
+                    const progress = (currentTime - startTime) / duration;
+                    const currentValue = Math.floor(start + (end - start) * progress);
+                    element.textContent = currentValue.toLocaleString('fr-FR');
+                    requestAnimationFrame(update);
+                } else {
+                    element.textContent = end.toLocaleString('fr-FR');
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+    </script>
+</body>
+</html>
