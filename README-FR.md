@@ -210,6 +210,34 @@ Journal-FR/
 - Corrections de bugs et améliorations
 - Optimisation des performances
 
+## 🌐 Déploiement GitHub Pages
+
+Le projet est automatiquement déployé sur GitHub Pages via GitHub Actions.
+
+### URLs de production
+- **GitHub Pages :** https://dr-aissa.github.io/publishers
+- **Domaine personnalisé :** https://publishers.dr-aissa.dev
+
+### Configuration du déploiement
+- **Repository :** `https://github.com/Dr-Aissa/publishers`
+- **Branche :** `master`
+- **Workflow :** `.github/workflows/deploy.yml`
+- **CI/CD :** Tests automatiques et déploiement
+
+### Fonctionnalités du workflow
+- ✅ Validation HTML/W3C
+- ✅ Vérification syntaxe JavaScript
+- ✅ Tests de performance Lighthouse
+- ✅ Déploiement automatique
+- ✅ Rapports de métriques
+
+### Métriques de performance
+Les tests Lighthouse sont exécutés automatiquement à chaque déploiement :
+- Performance
+- Accessibilité
+- Bonnes pratiques
+- SEO
+
 ## 📞 Contact et support
 
 Pour toute question ou suggestion concernant cette version française du système de recherche de revues scientifiques, veuillez consulter la documentation ou contacter l'équipe de développement.

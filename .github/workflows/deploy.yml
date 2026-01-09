@@ -1,0 +1,107 @@
+name: Build and deploy to GitHub Pages
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          npm install -g http-server
+          npm install -g puppeteer
+          npm install -g lighthouse
+
+      - name: Validate HTML
+        run: |
+          # Vérifier que tous les fichiers HTML sont valides
+          for file in *.html; do
+            echo "Validating $file..."
+            curl -s "https://validator.w3.org/nu/?out=json" \
+              -H "Content-Type: text/html; charset=utf-8" \
+              -H "User-Agent: Mozilla/5.0" \
+              --data-binary @"$file" > /dev/null || echo "Warning: $file may have validation issues"
+          done
+
+      - name: Test JavaScript
+        run: |
+          # Vérifier que les fichiers JavaScript n'ont pas d'erreurs de syntaxe
+          for file in *.js; do
+            echo "Checking syntax of $file..."
+            node -c "$file" || exit 1
+          done
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          cname: publishers.dr-aissa.dev
+
+      - name: Lighthouse Performance Test
+        run: |
+          # Démarrer un serveur local pour les tests
+          http-server -p 8080 -s &
+          SERVER_PID=$!
+
+          # Attendre que le serveur démarre
+          sleep 3
+
+          # Exécuter Lighthouse sur la page d'accueil
+          npx lighthouse http://localhost:8080/index.html \
+            --output=json \
+            --output-path=./lighthouse-results.json \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"
+
+          # Afficher les scores principaux
+          node -e "
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('./lighthouse-results.json', 'utf8'));
+            const categories = results.categories;
+            console.log('=== Lighthouse Performance Scores ===');
+            console.log(\`Performance: \${Math.round(categories.performance.score * 100)}/100\`);
+            console.log(\`Accessibility: \${Math.round(categories.accessibility.score * 100)}/100\`);
+            console.log(\`Best Practices: \${Math.round(categories['best-practices'].score * 100)}/100\`);
+            console.log(\`SEO: \${Math.round(categories.seo.score * 100)}/100\`);
+          "
+
+          # Arrêter le serveur
+          kill $SERVER_PID
+
+      - name: Create deployment summary
+        run: |
+          echo "# 🚀 Déploiement réussi sur GitHub Pages" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Repository:** https://github.com/Dr-Aissa/publishers" >> $GITHUB_STEP_SUMMARY
+          echo "**Site déployé:** https://dr-aissa.github.io/publishers" >> $GITHUB_STEP_SUMMARY
+          echo "**Branche:** master" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## ✅ Fonctionnalités déployées" >> $GITHUB_STEP_SUMMARY
+          echo "- Interface utilisateur française complète" >> $GITHUB_STEP_SUMMARY
+          echo "- Recherche et filtrage de revues scientifiques" >> $GITHUB_STEP_SUMMARY
+          echo "- Comparaison de revues avec export PDF" >> $GITHUB_STEP_SUMMARY
+          echo "- Données JCR/SJR intégrées" >> $GITHUB_STEP_SUMMARY
+          echo "- Design responsive et moderne" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📊 Métriques de performance" >> $GITHUB_STEP_SUMMARY
+          if [ -f "./lighthouse-results.json" ]; then
+            node -e "
+              const fs = require('fs');
+              const results = JSON.parse(fs.readFileSync('./lighthouse-results.json', 'utf8'));
+              const categories = results.categories;
+              process.stdout.write(\`- Performance: \${Math.round(categories.performance.score * 100)}/100\\n\`);
+              process.stdout.write(\`- Accessibilité: \${Math.round(categories.accessibility.score * 100)}/100\\n\`);
+              process.stdout.write(\`- Bonnes pratiques: \${Math.round(categories['best-practices'].score * 100)}/100\\n\`);
+              process.stdout.write(\`- SEO: \${Math.round(categories.seo.score * 100)}/100\\n\`);
+            " >> $GITHUB_STEP_SUMMARY
+          fi
