@@ -197,20 +197,312 @@ Journal-FR/
 - Interface : Développement original
 - Traduction : Version française complète
 
+## 🚀 Guide de déploiement
+
+Ce système de recherche de revues scientifiques peut être déployé de plusieurs façons selon vos besoins.
+
+### 🚀 Déploiement rapide avec scripts
+
+Pour un déploiement simplifié, utilisez les scripts fournis :
+
+#### Sur Linux/Mac
+```bash
+# Rendre le script exécutable
+chmod +x deploy.sh
+
+# Déploiement vers GitHub Pages
+./deploy.sh github-pages
+
+# Test local
+./deploy.sh local
+
+# Autres méthodes
+./deploy.sh netlify
+./deploy.sh vercel
+./deploy.sh docker
+```
+
+#### Sur Windows
+```batch
+# Déploiement vers GitHub Pages
+deploy.bat github-pages
+
+# Test local
+deploy.bat local
+```
+
+### Méthode 1 : GitHub Pages (Recommandé - Automatique)
+
+Le projet est automatiquement déployé sur GitHub Pages via GitHub Actions.
+
+#### URLs de production
+- **GitHub Pages :** https://dr-aissa.github.io/publishers
+- **Domaine personnalisé :** https://publishers.dr-aissa.dev
+
+#### Configuration du déploiement
+- **Repository :** `https://github.com/Dr-Aissa/publishers`
+- **Branche :** `master`
+- **Workflow :** `.github/workflows/deploy.yml`
+- **CI/CD :** Tests automatiques et déploiement
+
+#### Fonctionnalités du workflow
+- ✅ Validation HTML/W3C
+- ✅ Vérification syntaxe JavaScript
+- ✅ Tests de performance Lighthouse
+- ✅ Déploiement automatique
+- ✅ Rapports de métriques
+
+### Méthode 2 : Serveur Web Statique
+
+Pour déployer sur votre propre serveur :
+
+#### Prérequis
+```bash
+# Apache/Nginx ou tout serveur web
+# PHP non requis (site 100% statique)
+```
+
+#### Déploiement simple
+```bash
+# 1. Télécharger/cloner le projet
+git clone https://github.com/Dr-Aissa/publishers.git
+
+# 2. Copier les fichiers dans le répertoire web
+cp -r publishers/* /var/www/html/
+
+# 3. Configurer les permissions
+chmod -R 755 /var/www/html/
+```
+
+#### Configuration Apache (.htaccess)
+```apache
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Redirection vers index.html pour le SPA
+    RewriteRule ^index\.html$ - [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /index.html [L]
+</IfModule>
+
+# Compression GZIP
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript
+</IfModule>
+
+# Cache des ressources statiques
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+</IfModule>
+```
+
+#### Configuration Nginx
+```nginx
+server {
+    listen 80;
+    server_name votre-domaine.com;
+    root /var/www/html;
+    index index.html;
+
+    # Compression
+    gzip on;
+    gzip_types text/css application/javascript text/javascript;
+
+    # Cache
+    location ~* \.(css|js|png|jpg|jpeg|gif|ico|svg)$ {
+        expires 1M;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Fallback vers index.html pour SPA
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+### Méthode 3 : Netlify (CDN)
+
+#### Déploiement en un clic
+1. Se connecter sur [Netlify](https://netlify.com)
+2. Cliquer "New site from Git"
+3. Sélectionner votre repository GitHub
+4. Configurer :
+   - **Build command :** (laisser vide)
+   - **Publish directory :** `/` ou `./`
+5. Déployer
+
+#### Avantages Netlify
+- ✅ CDN mondial gratuit
+- ✅ HTTPS automatique
+- ✅ Déploiement automatique
+- ✅ Formulaires et fonctions serverless
+- ✅ Analytics intégré
+
+### Méthode 4 : Vercel (CDN)
+
+#### Déploiement rapide
+```bash
+# Installer Vercel CLI
+npm i -g vercel
+
+# Déployer
+vercel --prod
+
+# Ou lier à GitHub pour déploiement auto
+vercel link
+```
+
+#### Configuration vercel.json
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
+```
+
+### Méthode 5 : Docker
+
+#### Dockerfile
+```dockerfile
+FROM nginx:alpine
+
+# Copier les fichiers statiques
+COPY . /usr/share/nginx/html
+
+# Configuration Nginx pour SPA
+COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+#### Configuration Nginx pour Docker
+```nginx
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    server {
+        listen 80;
+        server_name localhost;
+        root /usr/share/nginx/html;
+        index index.html;
+
+        # Compression
+        gzip on;
+        gzip_types text/css application/javascript;
+
+        # Cache
+        location ~* \.(css|js|png|jpg|jpeg|gif|ico|svg)$ {
+            expires 1M;
+            add_header Cache-Control "public, immutable";
+        }
+
+        # Fallback SPA
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+    }
+}
+```
+
+#### Déploiement Docker
+```bash
+# Construire l'image
+docker build -t journal-search .
+
+# Lancer le conteneur
+docker run -p 8080:80 journal-search
+
+# Ou avec Docker Compose
+docker-compose up -d
+```
+
+### Méthode 6 : Serveur de développement local
+
+Pour tester localement avant déploiement :
+
+#### Avec Python
+```bash
+# Python 3
+python -m http.server 8000
+
+# Python 2
+python -m SimpleHTTPServer 8000
+```
+
+#### Avec Node.js
+```bash
+# Installer http-server globalement
+npm install -g http-server
+
+# Lancer le serveur
+http-server -p 8080 -o
+```
+
+#### Avec PHP (si disponible)
+```bash
+php -S localhost:8000
+```
+
+### 🔧 Optimisations de déploiement
+
+#### Performance
+- ✅ Compression GZIP activée
+- ✅ Cache des ressources statiques
+- ✅ Minification des assets (optionnel)
+- ✅ CDN pour les librairies externes
+
+#### Sécurité
+- ✅ HTTPS obligatoire
+- ✅ Headers de sécurité (CSP, HSTS)
+- ✅ Protection contre les injections XSS
+- ✅ Validation des entrées utilisateur
+
+#### SEO
+- ✅ Meta tags optimisés
+- ✅ Structure sémantique HTML
+- ✅ Performance Lighthouse > 90
+- ✅ Accessibilité WCAG 2.1
+
+### 📊 Monitoring post-déploiement
+
+#### Métriques à surveiller
+- Temps de chargement des pages
+- Taux d'erreur JavaScript
+- Utilisation des fonctionnalités
+- Performance Lighthouse
+- Trafic et sources de visites
+
+#### Outils de monitoring
+- **Google Analytics** : Trafic et comportement
+- **Google Search Console** : Référencement
+- **Lighthouse CI** : Performance continue
+- **Sentry** : Erreurs JavaScript
+
 ## 🔄 Mise à jour et évolution
-
-### Versions futures
-- Ajout de nouveaux indicateurs
-- Interface améliorée
-- Nouvelles fonctionnalités de recherche
-- Support multilingue étendu
-
-### Maintenance
-- Mise à jour annuelle des données JCR/SJR
-- Corrections de bugs et améliorations
-- Optimisation des performances
-
-## 🌐 Déploiement GitHub Pages
 
 Le projet est automatiquement déployé sur GitHub Pages via GitHub Actions.
 
